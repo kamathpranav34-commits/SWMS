@@ -6,7 +6,7 @@ from app.db.models.habitation import Habitation
 from app.db.models.habitation_parameter import HabitationParameter
 from app.db.models.user import User
 from app.schemas.parameters import ParameterResponse, ParameterUpdate, PARAMETER_CATEGORIES
-from app.services.validation_service import validate_demography
+from app.services.validation_service import validate_parameter
 
 router = APIRouter()
 
@@ -21,7 +21,10 @@ def get_parameters(habitation_id: str, db: Session = Depends(get_db), user: User
         .all()
     )
 
-@router.put("/{habitation_id}/parameters/{category}", response_model=ParameterResponse)
+@router.put(
+    "/{habitation_id}/parameters/{category}",
+    response_model=ParameterResponse
+)
 def update_parameter(
     habitation_id: str,
     category: str,
@@ -29,13 +32,32 @@ def update_parameter(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    # Check category
     if category not in PARAMETER_CATEGORIES:
-        raise HTTPException(400, f"Unsupported category. Use one of: {sorted(PARAMETER_CATEGORIES)}")
-    if not db.get(Habitation, habitation_id):
-        raise HTTPException(404, "Habitation not found")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "UNSUPPORTED_CATEGORY",
+                "message": (
+                    f"Unsupported category. "
+                    f"Use one of: {sorted(PARAMETER_CATEGORIES)}"
+                ),
+            },
+        )
 
-    if category == "demography":
-        errors = validate_demography(payload.data)
+    # Check habitation
+    if not db.get(Habitation, habitation_id):
+        raise HTTPException(
+            status_code=404,
+            detail="Habitation not found",
+        )
+
+    # Validate category data
+    errors = validate_parameter(
+        category,
+        payload.data,
+    )
+
     if errors:
         raise HTTPException(
             status_code=422,
@@ -45,22 +67,39 @@ def update_parameter(
             },
         )
 
+    # Find latest version
     latest = (
         db.query(HabitationParameter)
         .filter(
             HabitationParameter.habitation_id == habitation_id,
             HabitationParameter.category == category,
         )
-        .order_by(HabitationParameter.version.desc())
+        .order_by(
+            HabitationParameter.version.desc()
+        )
         .first()
     )
-    current_version = latest.version if latest else 0
-    if payload.expected_version is not None and payload.expected_version != current_version:
+
+    current_version = (
+        latest.version
+        if latest
+        else 0
+    )
+
+    # Optimistic locking
+    if (
+        payload.expected_version is not None
+        and payload.expected_version != current_version
+    ):
         raise HTTPException(
             status_code=409,
-            detail={"code": "VERSION_CONFLICT", "current_version": current_version},
+            detail={
+                "code": "VERSION_CONFLICT",
+                "current_version": current_version,
+            },
         )
 
+    # Create new version
     item = HabitationParameter(
         habitation_id=habitation_id,
         category=category,
@@ -68,7 +107,9 @@ def update_parameter(
         version=current_version + 1,
         created_by=user.id,
     )
+
     db.add(item)
     db.commit()
     db.refresh(item)
+
     return item
