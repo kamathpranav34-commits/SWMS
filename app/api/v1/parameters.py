@@ -53,19 +53,19 @@ def update_parameter(
         )
 
     # Validate category data
-    errors = validate_parameter(
-        category,
-        payload.data,
+    validation_result = validate_parameter(
+    category,
+    payload.data,
     )
 
-    if errors:
+    if validation_result["status"] == "INVALID":
         raise HTTPException(
             status_code=422,
             detail={
                 "code": "VALIDATION_ERROR",
-                "errors": errors,
+                "errors": validation_result,
             },
-        )
+    )
 
     # Find latest version
     latest = (

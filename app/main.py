@@ -7,7 +7,7 @@ app = FastAPI(title="SWMS Backend", version="1.0.0", description="Smart Waste Ma
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this in production.
+    allow_origins=["http://localhost:5500"],  # Restrict this in production.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

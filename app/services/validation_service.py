@@ -419,6 +419,22 @@ def validate_cultural_significance(data: dict[str, Any]) -> dict[str, Any]:
         warnings=warnings,
     )
 
+    religious_sites = _number(
+        data,
+        "religious_sites",
+        minimum=0,
+        errors=errors,
+        warnings=warnings,
+    )
+
+    historical_monuments = _number(
+        data,
+        "historical_monuments",
+        minimum=0,
+        errors=errors,
+        warnings=warnings,
+    )
+
     cultural_events = _number(
         data,
         "annual_cultural_events",
@@ -427,18 +443,29 @@ def validate_cultural_significance(data: dict[str, Any]) -> dict[str, Any]:
         warnings=warnings,
     )
 
-    protected_sites = _number(
-        data,
-        "protected_sites",
-        minimum=0,
-        errors=errors,
-        warnings=warnings,
-    )
+    # Optional boolean field
+    cultural_sites_protected = data.get("cultural_sites_protected")
 
-    if heritage_sites is not None and protected_sites is not None:
-        if protected_sites > heritage_sites:
+    if cultural_sites_protected is not None:
+        if not isinstance(cultural_sites_protected, bool):
             errors.append(
-                "protected_sites cannot exceed heritage_sites."
+                "cultural_sites_protected must be true or false."
+            )
+
+    # Validate traditional occupations
+    traditional_occupations = data.get("traditional_occupations")
+
+    if traditional_occupations is not None:
+        if not isinstance(traditional_occupations, list):
+            errors.append(
+                "traditional_occupations must be a list."
+            )
+        elif not all(
+            isinstance(item, str)
+            for item in traditional_occupations
+        ):
+            errors.append(
+                "traditional_occupations must contain only strings."
             )
 
     if cultural_events is not None and cultural_events > 365:
@@ -447,7 +474,19 @@ def validate_cultural_significance(data: dict[str, Any]) -> dict[str, Any]:
         )
 
     if heritage_sites == 0:
-        warnings.append("No heritage sites reported.")
+        warnings.append(
+            "No heritage sites reported."
+        )
+
+    if historical_monuments == 0:
+        warnings.append(
+            "No historical monuments reported."
+        )
+
+    if religious_sites == 0:
+        warnings.append(
+            "No religious sites reported."
+        )
 
     return _finalize(errors, warnings)
 
