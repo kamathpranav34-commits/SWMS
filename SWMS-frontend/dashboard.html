@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · SWMS</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  .hab-select-list{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+  .hab-select-list button{
+    text-align:left; padding:9px 11px; border:1px solid var(--line); background:var(--panel-raised);
+    color:var(--bone); border-radius:var(--radius); cursor:pointer; font-size:13px;
+  }
+  .hab-select-list button.current{border-color:var(--amber);}
+  .hab-select-list .lv{color:var(--ash-dim); font-size:11px; margin-left:6px;}
+  #leaflet-map{height:100%; width:100%;}
+</style>
+</head>
+<body>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script>const CONTENT = renderShell('dashboard.html');</script>
+
+<template id="tpl">
+  <div class="page-head">
+    <h1>Habitation dashboard</h1>
+    <p class="sub">Set up the habitation you're planning for, then fill its seven parameter categories before running a forecast.</p>
+  </div>
+
+  <div id="stat-row" class="stat-row"></div>
+
+  <div class="grid-2">
+    <div class="panel tick-frame">
+      <h3 id="hab-title">No habitation yet</h3>
+      <p id="hab-desc" class="muted" style="margin-bottom:16px;">Create one to begin — a village, ward or municipality you want to model.</p>
+
+      <div id="hab-list" class="hab-select-list"></div>
+
+      <form id="hab-form">
+        <div class="field-row">
+          <div>
+            <label for="hab-name">Name</label>
+            <input type="text" id="hab-name" placeholder="e.g. Udupi Coastal Ward 4" required>
+          </div>
+          <div>
+            <label for="hab-level">Level</label>
+            <select id="hab-level">
+              <option>VILLAGE</option>
+              <option>WARD</option>
+              <option>GRAM_PANCHAYAT</option>
+              <option>MUNICIPALITY</option>
+              <option>DISTRICT</option>
+            </select>
+          </div>
+        </div>
+        <label for="hab-desc-input">Description</label>
+        <textarea id="hab-desc-input" rows="2" placeholder="Short context for this habitation"></textarea>
+        <div class="field-row">
+          <div>
+            <label for="hab-lat">Latitude</label>
+            <input type="text" id="hab-lat" placeholder="13.3409">
+          </div>
+          <div>
+            <label for="hab-lng">Longitude</label>
+            <input type="text" id="hab-lng" placeholder="74.7421">
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Create habitation</button>
+      </form>
+
+      <hr class="hr-soft">
+      <div class="map-box" id="map-container"><div id="leaflet-map"></div></div>
+    </div>
+
+    <div class="panel tick-frame">
+      <h3>Seven parameter categories</h3>
+      <p class="muted" style="margin-bottom:10px;">Each category feeds the twenty-year forecast. Filled categories carry real numbers instead of illustrative defaults.</p>
+      <div class="check-list" id="cat-checklist"></div>
+      <hr class="hr-soft">
+      <a href="simulation.html" class="btn btn-primary" style="width:100%; justify-content:center;">Run a simulation</a>
+    </div>
+  </div>
+</template>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

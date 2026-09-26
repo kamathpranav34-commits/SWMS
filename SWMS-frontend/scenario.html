@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scenarios · SWMS</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .chart-wrap{position:relative; height:300px; margin-bottom:24px;}
+  .sc-list button{
+    width:100%; text-align:left; padding:9px 11px; margin-bottom:6px;
+    border:1px solid var(--line); background:var(--panel-raised); color:var(--bone);
+    border-radius:var(--radius); cursor:pointer; font-size:12.5px;
+  }
+</style>
+</head>
+<body>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script>const CONTENT = renderShell('scenario.html');</script>
+
+<template id="tpl">
+  <div class="page-head">
+    <h1>Scenarios</h1>
+    <p class="sub">Stress-test a baseline simulation against supported disruptions — population surge, road blockage, or flood — and compare the forecasts side by side.</p>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div class="panel tick-frame">
+      <h3>Build a scenario</h3>
+      <div id="no-sim-warning" class="empty-state" style="display:none;">
+        <h3>Run a simulation first</h3>
+        <p>Scenarios compare against a baseline forecast — create one on the Simulation page.</p>
+      </div>
+      <form id="sc-form">
+        <label for="sc-base">Baseline simulation</label>
+        <select id="sc-base"></select>
+        <label for="sc-name">Scenario name</label>
+        <input type="text" id="sc-name" placeholder="Population +20%" required>
+        <label for="sc-type">Scenario type</label>
+        <select id="sc-type">
+          <option value="POPULATION_SURGE">Population surge</option>
+          <option value="ROAD_BLOCKAGE">Road blockage</option>
+          <option value="FLOOD">Flood</option>
+        </select>
+        <div id="sc-param-field"></div>
+        <button class="btn btn-primary" type="submit" style="width:100%; justify-content:center;">Run scenario</button>
+      </form>
+      <hr class="hr-soft">
+      <h4 style="font-size:13px; color:var(--ash);">Past scenarios</h4>
+      <div class="sc-list" id="sc-list"></div>
+    </div>
+
+    <div class="panel tick-frame" id="sc-results">
+      <div class="empty-state">
+        <h3>No comparison yet</h3>
+        <p>Run a scenario to see it plotted against its baseline.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="js/scenario.js"></script>
+</body>
+</html>

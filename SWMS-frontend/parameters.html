@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parameters · SWMS</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script>const CONTENT = renderShell('parameters.html');</script>
+
+<template id="tpl">
+  <div class="page-head">
+    <h1>Parameters</h1>
+    <p class="sub">The seven categories the backend forecasts against. Numbers you leave blank fall back to reasonable planning defaults when you run a simulation.</p>
+  </div>
+
+  <div class="cat-tabs" id="cat-tabs"></div>
+
+  <div class="panel tick-frame">
+    <h3 id="cat-title"></h3>
+    <p class="muted" id="cat-hint" style="margin-bottom:16px;"></p>
+    <div id="kv-rows"></div>
+    <button class="btn btn-sm" id="add-row" type="button">Add field</button>
+    <hr class="hr-soft">
+    <button class="btn btn-primary" id="save-cat" type="button">Save category</button>
+    <span class="helper" id="save-hint" style="display:inline-block; margin-left:10px;"></span>
+  </div>
+</template>
+
+<script src="js/parameters.js"></script>
+</body>
+</html>
